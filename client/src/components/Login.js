@@ -47,7 +47,12 @@ const Login = () => {
             toast.error("password must be 6 char!", {
                 position: "top-center"
             });
-        } else {
+        } else if (!/[A-Z]/.test(password)) {
+            toast.error("Password must contain at least one uppercase letter!", {
+                position: "top-center"
+            });
+        }
+        else {
             // console.log("user login succesfully done");
 
 

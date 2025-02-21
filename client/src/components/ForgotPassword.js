@@ -51,6 +51,10 @@ const ForgotPassword = () => {
             toast.error("password must be 6 char!", {
                 position: "top-center"
             });
+        }else if (!/[A-Z]/.test(password)) {
+            toast.error("Password must contain at least one uppercase letter!", {
+                position: "top-center"
+            });
         }
         
         
