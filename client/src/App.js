@@ -10,7 +10,9 @@ import Box from '@mui/material/Box';
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { useEffect, useContext, useState } from "react";
 import { LoginContext } from "./components/ContextProvider/Context.js";
+import AdminPanel from "./Pages/Dashboard/AdminPanel.js";
 function App() {
+
   const [data, setData] = useState(false);
 
   const { logindata, setLoginData } = useContext(LoginContext);
@@ -61,7 +63,7 @@ function App() {
             <Route path="/password-reset" element={<PasswordReset />} />
             <Route path="/forgotpassword/:id/:token" element={<ForgotPassword />} />
             <Route path="*" element={<Error />} />
-            
+            <Route path="/" element={<AdminPanel/>}/>
           </Routes>
         </>
 

@@ -2,11 +2,10 @@ import React, { useState } from 'react'
 import { NavLink ,useNavigate} from "react-router-dom"
 import { ToastContainer, toast } from 'react-toastify';
 import "./mix.css"
-
 const Login = () => {
 
     const [passShow, setPassShow] = useState(false);
-
+    
     const [inpval, setInpval] = useState({
         email: "",
         password: "",
@@ -78,7 +77,11 @@ const Login = () => {
     }
 
     return (
-        <>
+        <>       
+  
+
+
+            
             <section>
                 <div className="form_data">
                     <div className="form_heading">

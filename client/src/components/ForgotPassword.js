@@ -51,7 +51,11 @@ const ForgotPassword = () => {
             toast.error("password must be 6 char!", {
                 position: "top-center"
             });
-        } else {
+        }
+        
+        
+        
+        else {
             const res = await fetch(`/${id}/${token}`, {
                 method: "POST",
                 headers: {

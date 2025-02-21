@@ -28,7 +28,7 @@ const Sidebar = () => {
             <FaHandshake /> Api integration
           </li>
           <li className="flex items-center gap-3 text-gray-700 hover:text-black cursor-pointer">
-            <FaCalendar /> Documatation
+            <FaCalendar /> Documentation
           </li>
           <li className="flex items-center gap-3 text-gray-700 hover:text-black cursor-pointer">
             <FaPhone /> Sub Users

@@ -20,6 +20,6 @@ header nav h1{
 header nav .avtar{
     cursor: pointer;
 }
-p{
-    margin-left: 70%;
+.nam p{
+    margin-left: 100%;
 }

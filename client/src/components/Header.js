@@ -61,13 +61,14 @@ const Header = () => {
             <header className=" bg-black text-white p-4 rounded-lg " >
                 <nav>
 
-                    <NavLink to="/profile/${usersdatatoken}"><h1 style={{ color: "white", fontWeight: "bold", fontSize: 20, }}>Dashboard</h1></NavLink>
+                    <NavLink to="/dash"><h1 style={{ color: "white", fontWeight: "bold", fontSize: 20, }}>Dashboard</h1></NavLink>
 
                     {
-                        logindata.ValidUserOne ? <p className='pss' style={{ background: "black", fontWeight: "bold", textTransform: "capitalize" }}>{logindata.ValidUserOne.fname}</p> :
+                        logindata.ValidUserOne ? <p className='nam' style={{ background: "black", fontWeight: "bold", textTransform: "capitalize" }}>{"Hello" +"  "+ logindata.ValidUserOne.fname}</p> :
                             ""
 
                     }
+                    <h3 className=" bg-black text-white p-4 rounded-lg" style={{ background: "black", fontWeight: "bold", textTransform: "capitalize" }}>Credits</h3>
                     {/* <title style={{color: "white"}}>credits</title> credits addition */}
                     <button className="bg-gray-800 px-4 py-2 rounded hover:bg-gray-700" onClick={handleClick} >Logout</button>
 
