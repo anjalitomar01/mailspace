@@ -25,12 +25,22 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 6,
+        validate(value) {
+            if (!/(?=.*[A-Z])/.test(value)) {
+                throw new Error("Password must contain at least one uppercase letter!");
+            }
+        }
     },
     cpassword: {
         type: String,
         required: true,
-        minlength: 6
+        minlength: 6,
+        validate(value) {
+            if (!/(?=.*[A-Z])/.test(value)) {
+                throw new Error("Password must contain at least one uppercase letter!");
+            }
+        }
     },
     tokens: [
         {
