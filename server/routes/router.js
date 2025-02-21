@@ -71,7 +71,7 @@ router.post("/register", async (req, res) => {
             res.status(422).json({ error: "Password and Confirm Password Not Match" })
         } else {
             const finalUser = new userdb({
-                fname, email, password, cpassword
+                fname, email, password, cpassword, credits:10 //Default credits
             });
 
             // here password hasing
@@ -171,6 +171,32 @@ router.get("/logout",authenticate,async(req,res)=>{
     }
 });
 
+//update credits API
+router.put("/update-credits", authenticate, async (req, res) => {
+    try {
+        const userId = req.userId; // Corrected user ID extraction
+        const { credits } = req.body;
+
+        if (typeof credits !== "number") {
+            return res.status(400).json({ message: "Invalid credits value" });
+        }
+
+        const user = await userdb.findByIdAndUpdate(
+            userId,
+            { $inc: { credits: credits } }, // Increment credits
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.json({ message: "Credits updated successfully", credits: user.credits });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+});
 
 
 // send email Link For reset Password
@@ -271,9 +297,7 @@ router.post("/:id/:token",async(req,res)=>{
     } catch (error) {
         res.status(401).json({status:401,error})
     }
-})
-
-
+});
 
 module.exports = router;
 

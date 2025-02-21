@@ -50,8 +50,8 @@ const Register = () => {
             toast.error("password is required!", {
                 position: "top-center"
             });
-        } else if (password.length < 6) {
-            toast.error("password must be 6 char!", {
+        } else if (password.length < 8) {
+            toast.error("password must be 8 char!", {
                 position: "top-center"
             });
         } else if (cpassword === "") {
@@ -59,20 +59,19 @@ const Register = () => {
                 position: "top-center"
             });
         }
-        else if (cpassword.length < 6) {
-            toast.error("confirm password must be 6 char!", {
+        else if (cpassword.length < 8) {
+            toast.error("confirm password must be 8 char!", {
                 position: "top-center"
             });
         } else if (password !== cpassword) {
             toast.error("pass and Cpass are not matching!", {
                 position: "top-center"
             });
-        } else if (!/[A-Z]/.test(password)) {
-            toast.error("Password must contain at least one uppercase letter!", {
+        }else if (!/(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
+            toast.error("Password must have at least one uppercase letter, one number, and one special character!", {
                 position: "top-center"
             });
         }
-       
         else {
             // console.log("user registration succesfully done");
 

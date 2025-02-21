@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
+    "mongodb": "^6.13.1",
     "react-native-auth0": "^4.4.0"
   }
 }

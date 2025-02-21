@@ -5,15 +5,27 @@ import { LoginContext } from './ContextProvider/Context.js';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useNavigate , NavLink } from "react-router-dom"
-
+import  { useState } from "react";
+import  { useEffect } from 'react';
 const Header = () => {
 
     const { logindata, setLoginData } = useContext(LoginContext);
 
     const history = useNavigate();
+    const [credits, setCredits] = useState(0);//credits
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
+
+// Fetch updated credits when logindata changes
+useEffect(() => {
+    if (logindata && logindata.ValidUserOne) {
+        setCredits(logindata.ValidUserOne.credits);
+    }
+}, [logindata]);
+
+
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -56,6 +68,34 @@ const Header = () => {
         history("*")
     }
 
+    //credits
+    const addCredits = async () => {
+        if (!logindata || !logindata.ValidUserOne) {
+            console.log("User data is not available");
+            return;
+        }
+        
+
+        let token = localStorage.getItem("usersdatatoken");
+
+        const res = await fetch("/update-credits", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": token
+            },
+            body: JSON.stringify({ credits: logindata.ValidUserOne.credits + 10 }) // Incrementing by 10
+        });
+
+        const data = await res.json();
+        if (data.message) {
+            setLoginData({ ...logindata, ValidUserOne: { ...logindata.ValidUserOne, credits: data.credits } });
+            setCredits(data.credits); // Update the credits in the UI
+        }
+    };
+    
+    
+    
     return (
         <>
             <header className=" bg-black text-white p-4 rounded-lg " >
@@ -68,8 +108,14 @@ const Header = () => {
                             ""
 
                     }
-                    <h3 className=" bg-black text-white p-4 rounded-lg" style={{ background: "black", fontWeight: "bold", textTransform: "capitalize" }}>Credits</h3>
+                     {/* Button to display credits and add credits */}
+                    <button onClick={addCredits}  className=" bg-black text-white p-4 rounded-lg" style={{ background: "black", fontWeight: "bold", textTransform: "capitalize" }}>Credits: {credits}</button>
+                    
+                   
+                
                     {/* <title style={{color: "white"}}>credits</title> credits addition */}
+
+                     {/* Logout Button */}
                     <button className="bg-gray-800 px-4 py-2 rounded hover:bg-gray-700" onClick={handleClick} >Logout</button>
 
                     <Menu

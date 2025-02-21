@@ -64,9 +64,11 @@ const Dashboard = () => {
             history("*");
         } else {
             console.log("user verify");
-            setLoginData(data)
+            setLoginData(data);
             history("/dash");
         }
+       
+        
     }
 
 
@@ -77,6 +79,8 @@ const Dashboard = () => {
         }, 2000)
 
     }, []);
+
+  
 
     return (
         <>

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const DB ="mongodb://localhost:27017/Auth0"
+const DB ="mongodb+srv://anjalithakur96505:vqrkxZHioMMtQoFk@cluster2.mqa6q.mongodb.net/authuser?retryWrites=true&w=majority&appName=Cluster2"
 mongoose.connect(DB,{
     useUnifiedTopology: true,
     useNewUrlParser: true
