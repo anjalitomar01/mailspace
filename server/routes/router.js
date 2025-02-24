@@ -7,13 +7,23 @@ const nodemailer = require("nodemailer");
 const jwt  = require("jsonwebtoken");
 
 
+const multer = require("multer");
+const fs = require("fs");
+const csv = require("csv-parser");
+const xlsx = require("xlsx");
+const Contact = require("../models/Contact"); // Your MongoDB Contact model
+
+
+
+
+
+
+
+
+
 
 // const keysecret = process.env.SECRET_KEY
 const keysecret = "info@mailspace.co.in"
-
-
-
-
 
 
 //email config
@@ -271,33 +281,91 @@ router.get("/forgotpassword/:id/:token",async(req,res)=>{
 });
 
 
-// change password
 
-router.post("/:id/:token",async(req,res)=>{
-    const {id,token} = req.params;
 
-    const {password} = req.body;
 
+
+// Multer Storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + "-" + file.originalname);
+    },
+});
+
+const upload = multer({ storage });
+
+// ✅ Upload Route
+router.post("/upload", upload.single("file"), async (req, res) => {
     try {
-        const validuser = await userdb.findOne({_id:id,verifytoken:token});
-        
-        const verifyToken = jwt.verify(token,keysecret);
+        if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
-        if(validuser && verifyToken._id){
-            const newpassword = await bcrypt.hash(password,12);
+        let contacts = [];
+        const filePath = req.file.path;
+        const customerName = req.body.customerName || "Unknown";
 
-            const setnewuserpass = await userdb.findByIdAndUpdate({_id:id},{password:newpassword});
-
-            setnewuserpass.save();
-            res.status(201).json({status:201,setnewuserpass})
-
-        }else{
-            res.status(401).json({status:401,message:"user not exist"})
+        // Read CSV
+        if (req.file.mimetype === "text/csv") {
+            fs.createReadStream(filePath)
+                .pipe(csv())
+                .on("data", (row) => contacts.push(row))
+                .on("end", async () => {
+                    await saveContacts(customerName, contacts);
+                    fs.unlinkSync(filePath);
+                    res.json({ message: "Contacts uploaded successfully" });
+                });
+        }
+        // Read XLSX
+        else if (
+            req.file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ) {
+            const workbook = xlsx.readFile(filePath);
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            contacts = xlsx.utils.sheet_to_json(sheet);
+            await saveContacts(customerName, contacts);
+            fs.unlinkSync(filePath);
+            res.json({ message: "Contacts uploaded successfully" });
+        }
+        // Read TXT
+        else if (req.file.mimetype === "text/plain") {
+            const fileData = fs.readFileSync(filePath, "utf-8");
+            contacts = fileData
+                .split("\n")
+                .map((line) => ({ name: line.trim() }))
+                .filter((entry) => entry.name);
+            await saveContacts(customerName, contacts);
+            fs.unlinkSync(filePath);
+            res.json({ message: "Contacts uploaded successfully" });
+        } else {
+            res.status(400).json({ message: "Invalid file format" });
         }
     } catch (error) {
-        res.status(401).json({status:401,error})
+        console.error("Upload error:", error);
+        res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+// ✅ Save Contacts to MongoDB
+async function saveContacts(customerName, contacts) {
+    let customer = await Contact.findOne({ customerName });
+
+    if (!customer) {
+        customer = new Contact({ customerName, contacts });
+    } else {
+        customer.contacts.push(...contacts);
+    }
+
+    await customer.save();
+}
+
+module.exports = router;
+
+
+
+
+
 
 module.exports = router;
 
