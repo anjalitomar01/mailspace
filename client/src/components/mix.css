@@ -1,6 +1,6 @@
 /* Ensure full-page height and prevent overflow */
 body, html {
-    height: 120vh;
+   height: 100vh;
     margin: 0;
     padding: 0;
     overflow: hidden; /* Prevents body scrolling */
@@ -12,24 +12,24 @@ body, html {
 /* Center the section */
 section {
     width: 100%;
-    height: 100vh; /* Full screen */
+    height: 100vh; 
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0; /* Remove extra padding */
+    padding: 0; 
 }
 
 /* Form container (with shadow retained) */
 section .form_data {
     width: 450px;
     padding: 25px 15px;
-    box-shadow: 0 0 15px -10px #2d3748; /* Shadow effect retained */
+    box-shadow: 0 0 15px -10px #2d3748; 
     border-radius: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    max-height: 90vh; /* Ensures the form does not overflow */
-    overflow: hidden; /* Prevent scrolling inside the form */
+    max-height: 90vh; 
+    overflow: hidden;
      background: white; 
 }
 

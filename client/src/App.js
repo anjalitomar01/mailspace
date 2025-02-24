@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { useEffect, useContext, useState } from "react";
 import { LoginContext } from "./components/ContextProvider/Context.js";
-import AdminPanel from "./Pages/Dashboard/AdminPanel.js";
+
 function App() {
 
   const [data, setData] = useState(false);
@@ -55,7 +55,7 @@ function App() {
       data ? (
         <>
          
-
+        
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -63,8 +63,10 @@ function App() {
             <Route path="/password-reset" element={<PasswordReset />} />
             <Route path="/forgotpassword/:id/:token" element={<ForgotPassword />} />
             <Route path="*" element={<Error />} />
-            <Route path="/" element={<AdminPanel/>}/>
-          </Routes>
+       
+      </Routes>
+  
+          
         </>
 
       ) : <Box sx={{ display: 'flex', justifyContent: "center", alignItems: "center", height: "100vh" }}>
