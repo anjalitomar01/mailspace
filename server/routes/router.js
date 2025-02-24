@@ -295,80 +295,76 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage });
+//const upload = multer({ storage });
 
-// ✅ Upload Route
+// Multer setup for in-memory storage
+const upload = multer({ storage: multer.memoryStorage() });
+
+// ✅ Upload Route with Debug Logs
 router.post("/upload", upload.single("file"), async (req, res) => {
     try {
-        if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+        if (!req.file) return res.status(400).json({ message: "❌ No file uploaded" });
 
-        let contacts = [];
-        const filePath = req.file.path;
+        console.log("✅ File received:", req.file.originalname);
+
         const customerName = req.body.customerName || "Unknown";
+        let contacts = [];
 
-        // Read CSV
+        // ✅ Parse CSV
         if (req.file.mimetype === "text/csv") {
-            fs.createReadStream(filePath)
-                .pipe(csv())
-                .on("data", (row) => contacts.push(row))
-                .on("end", async () => {
-                    await saveContacts(customerName, contacts);
-                    fs.unlinkSync(filePath);
-                    res.json({ message: "Contacts uploaded successfully" });
+            console.log("📂 Processing CSV file...");
+            const csvData = req.file.buffer.toString("utf8");
+            const lines = csvData.split("\n");
+            const headers = lines[0].split(",");
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(",");
+                let contact = {};
+                headers.forEach((header, index) => {
+                    contact[header.trim()] = values[index] ? values[index].trim() : "";
                 });
+                if (Object.keys(contact).length > 0) contacts.push(contact);
+            }
         }
-        // Read XLSX
+        // ✅ Parse XLSX
         else if (
-            req.file.mimetype === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            req.file.mimetype ===
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         ) {
-            const workbook = xlsx.readFile(filePath);
+            console.log("📂 Processing XLSX file...");
+            const workbook = xlsx.read(req.file.buffer, { type: "buffer" });
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
             contacts = xlsx.utils.sheet_to_json(sheet);
-            await saveContacts(customerName, contacts);
-            fs.unlinkSync(filePath);
-            res.json({ message: "Contacts uploaded successfully" });
         }
-        // Read TXT
+        // ✅ Parse TXT
         else if (req.file.mimetype === "text/plain") {
-            const fileData = fs.readFileSync(filePath, "utf-8");
+            console.log("📂 Processing TXT file...");
+            const fileData = req.file.buffer.toString("utf8");
             contacts = fileData
                 .split("\n")
                 .map((line) => ({ name: line.trim() }))
                 .filter((entry) => entry.name);
-            await saveContacts(customerName, contacts);
-            fs.unlinkSync(filePath);
-            res.json({ message: "Contacts uploaded successfully" });
         } else {
-            res.status(400).json({ message: "Invalid file format" });
+            return res.status(400).json({ message: "❌ Invalid file format" });
         }
+
+        // ✅ Debugging Logs
+        console.log("✅ Parsed Contacts:", contacts);
+
+        if (contacts.length === 0) {
+            return res.status(400).json({ message: "❌ No contacts found in file" });
+        }
+
+        // ✅ Save to MongoDB
+        await saveContacts(customerName, contacts);
+        res.json({ message: "✅ Contacts uploaded successfully!", totalContacts: contacts.length });
     } catch (error) {
-        console.error("Upload error:", error);
-        res.status(500).json({ message: "Server error", error: error.message });
+        console.error("❌ Upload error:", error);
+        res.status(500).json({ message: "❌ Server error", error: error.message });
     }
 });
 
-// ✅ Save Contacts to MongoDB
-async function saveContacts(customerName, contacts) {
-    let customer = await Contact.findOne({ customerName });
-
-    if (!customer) {
-        customer = new Contact({ customerName, contacts });
-    } else {
-        customer.contacts.push(...contacts);
-    }
-
-    await customer.save();
-}
-
 module.exports = router;
-
-
-
-
-
-
-module.exports = router;
-
 
 
 // 2 way connection
